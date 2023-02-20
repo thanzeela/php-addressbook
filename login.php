@@ -50,6 +50,7 @@
     }
 
     input[type="email"],
+    input[type="text"],
     input[type="password"] {
       width: 100%;
       padding: 10px;
@@ -99,7 +100,22 @@
     <h2>Login</h2>
     <form action="" method="post">
     <input type="email" name="email" placeholder="Email" required>
-      <input type="password" name="password" placeholder="Password" required>
+    <input type="password" name="password" value="" id="myInput" placeholder="Password" required>
+    <br><br>
+     <input type="checkbox" onclick="myFunction()">Show Password
+      <br>
+       <br>
+        <script>
+         function myFunction() {
+           var x = document.getElementById("myInput");
+            if (x.type === "password") {
+              x.type = "text";
+              } 
+              else {
+                 x.type = "password";
+                 }
+                 }
+                 </script>
       <input type="submit" name = "submit" value="Submit">
     </form>
     <div class="links">
@@ -155,7 +171,10 @@ if (isset($_POST['submit']))
     } 
     else 
     {
-        echo "Email or password is incorrect. Please try again.";
+   
+      echo '<script>alert("Invaild emailId or Password ")</script>';
+      
+      
     }
 
 

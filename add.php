@@ -66,7 +66,18 @@ $phone = $_POST["phone"];
 $state = $_POST["state"];
 $country = $_POST["country"];
 
+$photo = $_FILES["photo"]["name"];
+
+
 $pincode = $_POST["pincode"];
+
+$target_dir = "images/";
+ $target_file = $target_dir . basename($_FILES["photo"]["name"]);
+  $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+  $extensions_arr = array("jpg", "jpeg", "png", "gif");
+   move_uploaded_file($_FILES["photo"]["tmp_name"], $target_file);
+
+
 
 
 if (!preg_match("/^[a-zA-Z]+$/", $name)) {
@@ -74,8 +85,8 @@ if (!preg_match("/^[a-zA-Z]+$/", $name)) {
   $is_valid = false;
 }
 
-if (!preg_match("/^[7-9][0-9]{9}$/", $phone)) {
-  $phone_error = "Mobile must start with 7, 8 or 9 and contain 10 digits";
+if (!preg_match("/^[0-9]{10}$/", $phone)) {
+  $phone_error = "Mobile  contain 10 digits";
   $is_valid = false;
 }
 
@@ -117,9 +128,12 @@ $sql = "INSERT INTO address (name, phone, state, country, photo, pincode,user_id
 VALUES ('$name', '$phone', '$state', '$country', '$photo', '$pincode','$id')";
 
 if ($conn->query($sql) === TRUE) {
-    echo "New record created successfully";
 
-    header("Location:list.php");
+  echo '<script>alert("Added new contact successfully ");
+   location.href = "list.php";
+    </script>';
+  
+  
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
 }
@@ -213,7 +227,7 @@ $conn->close();
   </header>
   <div class="cont">
 
-    <form action="" method = "post">
+    <form action="" method = "post"  enctype="multipart/form-data">
       <label for="name">Name:</label>
       <input type="text" id="name" name="name">
       <span class="error"><?php echo $name_error; ?></span><br><br>
@@ -234,8 +248,9 @@ $conn->close();
       <span class="error"><?php echo $country_error; ?></span><br><br>
 
 
-      <label for="photo">Upload Photo:</label>
-      <input type="file" id="photo" name="photo">
+      <label for="photo" style="color: red">Upload Photo:</label>
+       <input type="file" id="photo" name="photo" onchange="previewImage(event);">
+        <img id="preview" style="max-width : 100px; "><br><br>
       
 
       <label for="pincode">Pincode:</label>
@@ -247,6 +262,19 @@ $conn->close();
       <a href = "list.php">Go back</a>
 
     </form>
+
+
+
+    <script>
+     function previewImage(event) {
+       var reader = new FileReader();
+       reader.onload = function() {
+        var output = document.getElementById('preview');
+        output.src = reader.result;
+         }
+          reader.readAsDataURL(event.target.files[0]);
+           }
+            </script>
     </div>
   </body>
 </html>

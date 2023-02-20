@@ -38,13 +38,57 @@ if(isset($_POST['update']))
     $phone = $_POST['phone'];
     $state = $_POST['state'];
     $country = $_POST['country'];
-    $photo = $_POST['photo'];
+    $photo = $_FILES["photo"]["name"];
     $pincode = $_POST['pincode'];
+
+    $is_valid = true;
+
+
+    $target_dir = "images/";
+    $target_file = $target_dir . basename($_FILES["photo"]["name"]);
+     $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+     $extensions_arr = array("jpg", "jpeg", "png", "gif");
+      move_uploaded_file($_FILES["photo"]["tmp_name"], $target_file);
+   
+
+      if($photo == "")
+       {
+         $photo = $row['photo'];
+         }
+        
+if (!preg_match('/^[\p{L} ]+$/u', $name)) {
+   $name_error = "Name must contain only letters";
+    $is_valid = false;
+   }
+    if (!preg_match("/^[0-9]{10}$/", $phone)) {
+       $phone_error = "Mobile must contain 10 digits";
+       $is_valid = false;
+      }
+       if (!preg_match("/^[1-9][0-9]{5}$/", $pincode)){
+         $pincode_error = "Invalid pin code";
+          $is_valid = false;
+        }
+         if (empty($state))
+          {
+            $state_error = "Address cant be empty";
+             $is_valid = false;
+             }
+             if (empty($country))
+              {
+                 $country_error = "Address cant be empty";
+                  $is_valid = false;
+                 } if ($is_valid) {
+
+
+
+
     $sql = "UPDATE address SET name='$name', phone='$phone', state='$state', country='$country', photo='$photo', pincode='$pincode' WHERE id=$id";
     if (mysqli_query($conn, $sql))
      {
 
-        header("Location: list.php");
+      echo '<script>alert("updated successfully ");
+      location.href = "list.php";
+      </script>';
 
     }
      else 
@@ -53,7 +97,7 @@ if(isset($_POST['update']))
     }
 }
 mysqli_close($conn); 
-        
+}       
 
 ?>
 
@@ -120,16 +164,34 @@ mysqli_close($conn);
       <a href="list.php" style="color:black">Profile</a>
       <a href="index.php"style="color:black">Home</a>
     </nav>
-    <form action="" method="post">
+    <form action="" method="post" enctype="multipart/form-data">
       <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
       <p>Name: <input type="text" name="name"  value="<?php echo $row['name']; ?>"></p>
       <p>Phone: <input type="text" name="phone" value="<?php echo $row['phone']; ?>"></p>
       <p>State: <input type="text" name="state" value="<?php echo $row['state']; ?>"></p>
       <p>Country: <input type="text" name="country" value="<?php echo $row['country']; ?>"></p>
-      <p>Photo: <input type="file" name="photo" value="<?php echo $row['photo']; ?>" ></p>
+      <label for="photo" style="color: red; display:flex; justify-content:flex-start;">Photo</label>
+      <input type="file" name="photo" onchange="previewImage(event);" value=""><span><?php echo $row['photo'];?></span>
+      <img id = "preview" style = "max-width : 100px;"><br><br>
       <p>Pincode: <input type="text" name="pincode" value="<?php echo $row['pincode']; ?>" ></p>
       <input type="submit" name="update" value="Update">
     </form>
+
+    <script>
+    function previewImage(event)
+    {
+       var reader = new FileReader();
+        reader.onload = function()
+         {
+          var output = document.getElementById('preview');
+          output.src = reader.result;
+           }
+           reader.readAsDataURL(event.target.files[0]);
+            } </script>
+
+
+
+
   </body>
 </html>
 
